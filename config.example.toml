@@ -1,0 +1,49 @@
+# Copy to ~/.config/yomiplay/config.toml and edit.
+# This project ships no games, BIOS files or emulator cores. Use your own legally obtained copies.
+
+[core]
+# Path to a libretro PS1 core built with the software renderer (Beetle PSX: mednafen_psx_libretro.so)
+core_path = "/home/you/ps1/cores/mednafen_psx_libretro.so"
+# Folder containing your BIOS file (e.g. scph5500.bin for Japanese games)
+bios_dir = "/home/you/ps1/bios"
+
+[core.options]
+# Optional core options, passed to the core as-is
+
+[library]
+games_dir = "/home/you/ps1/games"
+
+[llm]
+backend = "claude_cli"   # later: "codex_cli", "anthropic", "openai", "ollama"
+claude_bin = "claude"
+# model = "claude-sonnet-5-5"
+timeout_s = 90
+
+[companion]
+pause_while_reading = true
+default_profile = "ja-study"
+
+[server]
+host = "127.0.0.1"
+port = 8765
+
+[app]
+# Used by `yomiplay app` only (`serve` runs until you press Quit)
+idle_shutdown_s = 10.0          # stop this long after the last tab closes
+first_connect_timeout_s = 60.0  # stop if no tab connects within this time
+
+[keys.mapping]
+ArrowUp = "UP"
+ArrowDown = "DOWN"
+ArrowLeft = "LEFT"
+ArrowRight = "RIGHT"
+KeyX = "CROSS"
+KeyZ = "CIRCLE"
+KeyS = "TRIANGLE"
+KeyA = "SQUARE"
+Enter = "START"
+ShiftRight = "SELECT"
+KeyQ = "L"
+KeyW = "R"
+Digit1 = "L2"
+Digit2 = "R2"

@@ -1,0 +1,10 @@
+name = "tutor-chat"
+title = "Tutor (free chat)"
+source_language = "ja"
+target_languages = ["en"]
+level = "beginner"
+style = """
+Act as a friendly Japanese tutor. Read the text on screen aloud in romaji first,
+then explain it conversationally and ask the learner one short question to check understanding.
+"""
+card = "free"

@@ -1,0 +1,43 @@
+[project]
+name = "yomiplay"
+version = "0.1.0"
+description = "PS1 emulator with an LLM companion; research harness for game-playing agents"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+dependencies = [
+  "numpy>=1.26",
+  "pillow>=10",
+  "pydantic>=2.6",
+  "fastapi>=0.110",
+  "uvicorn[standard]>=0.29",
+  "fugashi>=1.3",
+  "unidic-lite>=1.0.8",
+]
+
+[project.scripts]
+yomiplay = "yomiplay.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8", "pytest-asyncio>=0.23", "httpx>=0.27", "import-linter>=2.0", "ruff>=0.4"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/yomiplay"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+filterwarnings = [
+  "ignore:Using `httpx` with `starlette.testclient`:Warning",
+]
+markers = [
+  "rom: needs a real core, BIOS and game (set YOMIPLAY_TEST_CONTENT/CORE/BIOS_DIR)",
+  "live_llm: calls the real claude CLI (set YOMIPLAY_LIVE_LLM=1)",
+]
+
+[tool.ruff]
+line-length = 110
+src = ["src", "tests"]

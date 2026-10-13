@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Blocks committing game content, BIOS, cores, saves, game screenshots and extracted game text.
+# See CLAUDE.md "Copyright and content policy".
+set -u
+fail=0
+err(){ echo "pre-commit: BLOCKED: $1" >&2; fail=1; }
+
+# Images are only allowed in these folders (README screenshots / our own art / code-generated test images)
+IMG_OK='^(assets/screenshots/|web/icons/|docs/assets/own/|tests/fixtures/synthetic/)'
+MAX_BYTES=$((1024*1024))
+
+while IFS= read -r -d '' f; do
+  lower=$(printf '%s' "$f" | tr '[:upper:]' '[:lower:]')
+  base=${lower##*/}
+  case "$lower" in
+    *.bin|*.cue|*.iso|*.img|*.chd|*.pbp|*.ecm|*.m3u|*.mds|*.mdf|*.ccd|*.sub)
+      err "$f: disc image / game file type" ;;
+    *.pac|*.str|*.xa|*.tim|*.vag|*.sfs)
+      err "$f: data extracted from a game disc" ;;
+    *.so|*.dll|*.dylib)
+      err "$f: emulator core / native library (users supply their own)" ;;
+    *.state|*.srm|*.mcr|*.mcd|*.mc|*.gme|*.vmp|*.sav)
+      err "$f: save state / memory card" ;;
+  esac
+  case "$base" in
+    scph*|*bios*) err "$f: looks like a BIOS file" ;;
+    slps_*|scus_*|slus_*|sces_*|sles_*|scps_*|slpm_*) err "$f: looks like a PS1 game executable" ;;
+  esac
+  case "$lower" in
+    *.png|*.jpg|*.jpeg|*.gif|*.webp|*.bmp|*.tga)
+      if ! printf '%s' "$f" | grep -Eq "$IMG_OK"; then
+        err "$f: images only allowed in assets/screenshots/ (README only), web/icons/, docs/assets/own/, tests/fixtures/synthetic/ (no other game screenshots)"
+      fi ;;
+  esac
+  size=$(git cat-file -s ":$f" 2>/dev/null || echo 0)
+  if [ "$size" -gt "$MAX_BYTES" ]; then err "$f: larger than 1 MB ($size bytes)"; fi
+  # extracted game-script dump formats used by translation tooling
+  if git show ":$f" 2>/dev/null | grep -Eq '^(JP|EN|ZH): '; then
+    err "$f: contains 'JP:/EN:/ZH:' script-dump lines (game text must not be committed)"
+  fi
+done < <(git diff --cached --name-only -z --diff-filter=ACMR)
+
+if [ "$fail" -ne 0 ]; then
+  echo "pre-commit: see CLAUDE.md (Copyright and content policy). Do not use --no-verify." >&2
+  exit 1
+fi
+exit 0

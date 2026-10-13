@@ -1,0 +1,51 @@
+[importlinter]
+root_package = yomiplay
+
+[importlinter:contract:layers-core]
+name = core, games and store depend only on types
+type = forbidden
+source_modules =
+    yomiplay.core
+    yomiplay.games
+    yomiplay.store
+forbidden_modules =
+    yomiplay.runtime
+    yomiplay.llm
+    yomiplay.assist
+    yomiplay.server
+    yomiplay.cli
+
+[importlinter:contract:runtime]
+name = runtime does not know about llm, assist, store, server
+type = forbidden
+source_modules =
+    yomiplay.runtime
+forbidden_modules =
+    yomiplay.llm
+    yomiplay.assist
+    yomiplay.store
+    yomiplay.server
+    yomiplay.games
+
+[importlinter:contract:llm]
+name = llm knows nothing about games or emulation
+type = forbidden
+source_modules =
+    yomiplay.llm
+forbidden_modules =
+    yomiplay.core
+    yomiplay.runtime
+    yomiplay.games
+    yomiplay.assist
+    yomiplay.store
+    yomiplay.server
+
+[importlinter:contract:assist]
+name = assist never touches runtime, core or server
+type = forbidden
+source_modules =
+    yomiplay.assist
+forbidden_modules =
+    yomiplay.runtime
+    yomiplay.core
+    yomiplay.server

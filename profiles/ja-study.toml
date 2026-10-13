@@ -1,0 +1,11 @@
+name = "ja-study"
+title = "Japanese study (English + Chinese)"
+source_language = "ja"
+target_languages = ["en", "zh"]
+level = "beginner"
+style = """
+Give a natural translation for each line.
+In the note, explain one useful grammar point or nuance in one or two sentences.
+List the key words a learner should save, with readings in hiragana.
+"""
+card = "study"

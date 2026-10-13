@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yomiplay</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header id="bar"><span id="game">Loading…</span><span id="state"></span>
+  <button id="btn-pause" type="button">Pause</button>
+  <button id="btn-reset" type="button">Reset</button>
+  <button id="btn-quit" type="button">Quit</button>
+  <span id="confirm" role="alertdialog" aria-live="assertive" hidden>
+    <span id="confirm-text"></span>
+    <button id="confirm-yes" type="button">Yes</button>
+    <button id="confirm-no" type="button">Cancel</button>
+  </span>
+  <span id="sound-note" hidden><span id="sound-note-text"></span> <button id="btn-sound" type="button">Try again</button></span>
+  <span id="error" role="alert" hidden></span></header>
+<main id="layout">
+  <section id="game-pane"><div id="screen-box"><canvas id="screen" width="320" height="240" tabindex="0" aria-label="Game screen"></canvas><div id="overlay" aria-hidden="true"></div></div>
+    <div id="slots" aria-label="Save slots"></div>
+    <div id="overlay-controls"><label><input type="checkbox" id="overlay-on"> Overlay</label>
+      <select id="overlay-mode" aria-label="Overlay language" disabled><option value="" disabled>after Explain</option></select></div></section>
+  <aside id="side">
+    <nav id="tabs" role="tablist">
+      <button role="tab" id="tab-chat" aria-selected="true">Chat</button>
+      <button role="tab" id="tab-words" aria-selected="false">Words</button>
+      <button role="tab" id="tab-controls" aria-selected="false">Controls</button>
+      <label id="profile-label">Profile <select id="profile"></select></label>
+    </nav>
+    <section id="panel-chat" role="tabpanel">
+      <div id="messages" aria-live="polite"></div>
+      <form id="composer">
+        <input id="question" placeholder="Ask about this screen…" autocomplete="off">
+        <button id="btn-explain" type="button">Explain screen</button>
+        <button id="btn-send" type="submit">Send</button>
+        <button id="btn-cancel" type="button" hidden>Cancel</button>
+        <button id="btn-continue" type="button" hidden>Continue game</button>
+      </form>
+    </section>
+    <section id="panel-words" role="tabpanel" hidden>
+      <div id="word-filters">
+        <select id="word-filter"><option value="all">All seen</option><option value="starred">Starred</option>
+          <option value="session">This session</option></select>
+        <select id="word-sort"><option value="count">Most seen</option><option value="recent">Recent</option></select>
+      </div>
+      <ul id="word-list"></ul>
+      <div id="word-detail"></div>
+    </section>
+    <section id="panel-controls" role="tabpanel" hidden>
+      <p id="controls-pad" class="msg-meta"></p>
+      <div id="controls-head" class="ctl-row"><span></span><b>Keyboard</b><b>Gamepad</b></div>
+      <div id="controls-rows"></div>
+      <div id="controls-actions">
+        <button id="controls-save" type="button" disabled>Save</button>
+        <button id="controls-defaults" type="button">Reset to defaults</button>
+        <span id="controls-msg" class="msg-meta" role="status"></span>
+      </div>
+    </section>
+  </aside>
+</main>
+<div id="stopped" role="status" hidden>Yomiplay has stopped. You can close this tab.</div>
+<script type="module" src="/static/app.js"></script>
+</body>
+</html>

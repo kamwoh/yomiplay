@@ -1,0 +1,7 @@
+name = "quick-translate"
+title = "Quick translate (English)"
+source_language = "ja"
+target_languages = ["en"]
+level = "fluent"
+style = "Translate only. Leave notes empty and list at most three words."
+card = "study"

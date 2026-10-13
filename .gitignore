@@ -1,0 +1,33 @@
+# Never commit games, BIOS or cores
+*.bin
+*.cue
+*.iso
+*.chd
+*.m3u
+*.so
+*.dll
+*.state
+.venv/
+__pycache__/
+*.pyc
+*.img
+*.pbp
+*.ecm
+*.srm
+*.mcr
+*.mcd
+*.mc
+*.gme
+*.vmp
+*.dylib
+*.ps1r
+*.sqlite
+
+# Local only: game profiles (~/.config/yomiplay/games/ is read first), design docs, tool caches, AI work notes
+/games/
+/docs/
+.pytest_cache/
+.ruff_cache/
+.import_linter_cache/
+.worktrees/
+.superpowers/
