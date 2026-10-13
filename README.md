@@ -1,5 +1,7 @@
 # Yomiplay
 
+![Yomiplay: learn Japanese while you play](assets/brand/banner.jpg)
+
 A PS1 emulator with a language model beside the game. Version 1 is a **companion for learning Japanese while you play**: ask about the screen, get study cards (transcription, reading, translations, notes), and every word you have read is counted in a personal word list. The same core is designed for LLM agents, a Gymnasium environment for RL, and benchmarks (planned).
 
 ![Explain on the title menu: study cards in English and Chinese, with the Chinese overlay on the game screen](assets/screenshots/title-menu.png)

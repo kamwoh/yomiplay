@@ -6,7 +6,7 @@ fail=0
 err(){ echo "pre-commit: BLOCKED: $1" >&2; fail=1; }
 
 # Images are only allowed in these folders (README screenshots / our own art / code-generated test images)
-IMG_OK='^(assets/screenshots/|web/icons/|docs/assets/own/|tests/fixtures/synthetic/)'
+IMG_OK='^(assets/brand/|assets/screenshots/|web/icons/|docs/assets/own/|tests/fixtures/synthetic/)'
 MAX_BYTES=$((1024*1024))
 
 while IFS= read -r -d '' f; do
@@ -29,7 +29,7 @@ while IFS= read -r -d '' f; do
   case "$lower" in
     *.png|*.jpg|*.jpeg|*.gif|*.webp|*.bmp|*.tga)
       if ! printf '%s' "$f" | grep -Eq "$IMG_OK"; then
-        err "$f: images only allowed in assets/screenshots/ (README only), web/icons/, docs/assets/own/, tests/fixtures/synthetic/ (no other game screenshots)"
+        err "$f: images only allowed in assets/brand/ (our logo and art), assets/screenshots/ (README only), web/icons/, docs/assets/own/, tests/fixtures/synthetic/ (no other game screenshots)"
       fi ;;
   esac
   size=$(git cat-file -s ":$f" 2>/dev/null || echo 0)
