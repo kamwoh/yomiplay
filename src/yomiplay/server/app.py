@@ -28,6 +28,7 @@ from yomiplay.runtime.player import EmulatorFailed, Player, PlayerEvent
 from yomiplay.runtime.replay import ReplayRecorder
 from yomiplay.server.autoshutdown import AutoShutdown
 from yomiplay.server.bridge import MediaBridge
+from yomiplay.store import llm_choice
 from yomiplay.store.logs import EventLog
 from yomiplay.store.paths import DataPaths, config_root
 from yomiplay.store.paths import data_root as default_data_root
@@ -61,6 +62,12 @@ class Runtime:
     words: WordStore | None = None
     auto_shutdown: AutoShutdown | None = None  # only set by `yomiplay app`
     emulator_failed: str | None = None  # set (from the Player thread) when emulation stopped for good
+    llm_backends: dict = field(default_factory=dict)  # "chat" -> backend whose model the UI may change
+
+
+def llm_defaults(cfg: Config) -> dict[str, dict]:
+    """Model and thinking per target from config.toml."""
+    return {"chat": {"model": cfg.llm.model, "thinking": cfg.llm.thinking}}
 
 
 def _build_emulator(cfg: Config, paths: DataPaths) -> Emulator:
@@ -105,15 +112,18 @@ def create_app(cfg: Config, content: Path, emulator: Emulator | None = None,
             event_log = EventLog(session_dir)
             event_log.append("session_start", serial=serial)  # chat history groups sessions by game
             # built before the Player thread starts, so touching emu.provenance here is safe
+            choices = llm_choice.load(config_root() / "llm.json", llm_defaults(cfg))
+            chat_llm = backend or ClaudeCLIBackend([cfg.llm.claude_bin], choices["chat"]["model"], cfg.llm.timeout_s,
+                                                   choices["chat"]["thinking"])
             companion = CompanionService(
-                backend or ClaudeCLIBackend([cfg.llm.claude_bin], cfg.llm.model, cfg.llm.timeout_s),
+                chat_llm,
                 ProfileLibrary([REPO_ROOT / "profiles", config_root() / "profiles"]),
                 FugashiTokenizer(), words, event_log, profile, session_dir.name,
                 json.dumps(emu.provenance.to_dict()))
             rt = Runtime(cfg, paths, emu, player, human, bridge, profile, serial, av,
                          StateStore(paths.states_dir(serial or "unknown")), recorder, session_dir,
                          extra=dict(extra or {}), companion=companion, words=words,
-                         auto_shutdown=auto_shutdown)
+                         auto_shutdown=auto_shutdown, llm_backends={"chat": chat_llm})
             app.state.rt = rt
             for hook in rt.extra.get("on_startup", []):
                 hook(rt)

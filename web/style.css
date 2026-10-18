@@ -47,6 +47,8 @@ button:focus-visible, canvas:focus-visible { outline: 2px solid var(--accent); o
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { border: 1px solid var(--accent); color: var(--accent); background: transparent; border-radius: 999px; padding: 1px 10px; }
 .chip[aria-pressed="true"] { background: var(--accent); color: #0d1414; }
+.llm-pick { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+#composer .llm-pick { flex-basis: 100%; }
 #composer { display: flex; gap: 6px; padding: 10px; border-top: 1px solid var(--line); flex-wrap: wrap; }
 #question { flex: 1; min-width: 140px; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 5px; padding: 6px 8px; }
 #word-filters { display: flex; gap: 6px; padding: 8px; }

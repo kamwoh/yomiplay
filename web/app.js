@@ -5,6 +5,7 @@ import { createOverlay } from "./overlay.js";
 import { mountChat } from "./chat.js";
 import { mountWords } from "./words.js";
 import { mountControls } from "./controls.js";
+import { mountLLMPickers } from "./llm.js";
 import { page } from "./state.js";
 
 const $ = (id) => document.getElementById(id);
@@ -137,6 +138,7 @@ async function main() {
   };
   const words = mountWords();
   let controls = null;
+  mountLLMPickers(showError).catch((err) => showError(`Model picker unavailable: ${err.message}`));
   mountControls(input).then((c) => { controls = c; }).catch((err) => showError(`Controls unavailable: ${err.message}`));
   const tabs = { chat: [$("tab-chat"), $("panel-chat")], words: [$("tab-words"), $("panel-words")],
     controls: [$("tab-controls"), $("panel-controls")] };

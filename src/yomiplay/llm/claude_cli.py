@@ -51,7 +51,8 @@ class ClaudeCLIConversation:
             self._stderr_tail = (self._stderr_tail + chunk)[-4096:]
 
     async def _ensure(self, schema: dict | None) -> asyncio.subprocess.Process:
-        key = json.dumps(schema, sort_keys=True) if schema else ""
+        # a new model or thinking level needs a new process (the old one's context is lost)
+        key = json.dumps([schema, self.b.model, self.b.thinking], sort_keys=True)
         if self._proc and self._proc.returncode is None and key == self._schema_key:
             return self._proc
         await self._kill()
@@ -60,8 +61,13 @@ class ClaudeCLIConversation:
             args += ["--json-schema", json.dumps(schema)]
         if self.b.model:
             args += ["--model", self.b.model]
+        env = None
+        if self.b.thinking == "off":
+            env = {**os.environ, "MAX_THINKING_TOKENS": "0"}
+        elif self.b.thinking:
+            args += ["--effort", self.b.thinking]
         self._proc = await asyncio.create_subprocess_exec(
-            *args, cwd=self._cwd, stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE,
+            *args, cwd=self._cwd, env=env, stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE, start_new_session=True, limit=16 * 1024 * 1024)
         self._schema_key = key
         self._stderr_tail = b""
@@ -200,9 +206,11 @@ class ClaudeCLIConversation:
 class ClaudeCLIBackend:
     name = "claude_cli"
 
-    def __init__(self, command: list[str] | None = None, model: str | None = None, timeout_s: float = 90.0):
+    def __init__(self, command: list[str] | None = None, model: str | None = None, timeout_s: float = 90.0,
+                 thinking: str | None = None):
         self.command = command or ["claude"]
         self.model = model
+        self.thinking = thinking  # None (CLI default), "off", or an --effort level
         self.timeout_s = timeout_s
 
     async def open(self, system: str) -> ClaudeCLIConversation:

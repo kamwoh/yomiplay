@@ -9,6 +9,10 @@ args_file = os.environ.get("FAKE_CLAUDE_ARGS")
 if args_file:
     with open(args_file, "a") as f:  # one JSON line per spawn
         f.write(json.dumps(sys.argv[1:]) + "\n")
+env_file = os.environ.get("FAKE_CLAUDE_ENV")
+if env_file:
+    with open(env_file, "a") as f:  # one line per spawn: MAX_THINKING_TOKENS or "-"
+        f.write(os.environ.get("MAX_THINKING_TOKENS", "-") + "\n")
 
 
 def out(obj):

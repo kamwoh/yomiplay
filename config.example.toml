@@ -16,7 +16,8 @@ games_dir = "/home/you/ps1/games"
 [llm]
 backend = "claude_cli"   # later: "codex_cli", "anthropic", "openai", "ollama"
 claude_bin = "claude"
-# model = "claude-sonnet-5-5"
+# model = "claude-sonnet-5-5"   # or an alias: opus, sonnet, haiku, fable
+# thinking = "low"   # "off" or low, medium, high, xhigh, max. The Model/Thinking pickers in the UI override this.
 timeout_s = 90
 
 [companion]

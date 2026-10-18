@@ -12,6 +12,7 @@ from yomiplay.runtime.player import EmulatorFailed, StatusChanged
 from yomiplay.server.app import WEB_DIR
 from yomiplay.server.media import encode_audio, encode_video, rate_from_fill
 from yomiplay.store import controls as ctl
+from yomiplay.store import llm_choice
 from yomiplay.store.paths import config_root
 from yomiplay.store.states import SlotCorrupt, StateMismatch
 
@@ -79,6 +80,46 @@ async def put_controls(body: ControlsBody, request: Request):
     except OSError as e:
         raise HTTPException(500, f"could not save controls: {e}")
     return {"keys": keys, "pad": pad}
+
+
+def llm_path():
+    return config_root() / "llm.json"
+
+
+class LLMChoiceBody(BaseModel):
+    target: str
+    model: str | None = None
+    thinking: str | None = None
+
+
+def _current_choices(r) -> dict[str, dict]:
+    return {t: {"model": getattr(b, "model", None), "thinking": getattr(b, "thinking", None)}
+            for t, b in r.llm_backends.items()}
+
+
+@router.get("/api/llm")
+async def get_llm(request: Request):
+    return {"models": llm_choice.MODELS, "thinking": llm_choice.THINKING, **_current_choices(rt(request))}
+
+
+@router.put("/api/llm")
+async def put_llm(body: LLMChoiceBody, request: Request):
+    """Change the model / thinking level for chat. It applies from the next request."""
+    r = rt(request)
+    if body.target not in llm_choice.TARGETS:
+        raise HTTPException(400, f"unknown target {body.target!r}")
+    try:
+        choice = llm_choice.validate(body.model, body.thinking)
+    except llm_choice.InvalidChoice as e:
+        raise HTTPException(400, str(e))
+    backend = r.llm_backends[body.target]
+    for k, v in choice.items():
+        setattr(backend, k, v)  # both targets may share one backend in tests; then both change
+    try:
+        await asyncio.to_thread(llm_choice.save, llm_path(), body.target, choice)
+    except OSError as e:
+        raise HTTPException(500, f"could not save the model choice (it applies until a restart): {e}")
+    return _current_choices(r)
 
 
 @router.post("/api/reset")

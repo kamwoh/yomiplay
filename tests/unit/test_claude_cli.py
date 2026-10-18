@@ -150,3 +150,22 @@ async def test_progress_receiving_is_throttled(mode, m, schema):
     assert chars == sorted(chars) and chars[0] == 5 and chars[-1] > chars[0]
     assert any(isinstance(e, Final) for e in ev)
     await conv.close()
+
+
+async def test_model_and_thinking_changes_respawn_with_new_flags(mode, tmp_path, monkeypatch):
+    mode("text")
+    monkeypatch.setenv("FAKE_CLAUDE_ARGS", str(tmp_path / "args.json"))
+    monkeypatch.setenv("FAKE_CLAUDE_ENV", str(tmp_path / "env.txt"))
+    backend = ClaudeCLIBackend(FAKE, model="opus", timeout_s=10, thinking="low")
+    conv = await backend.open("s")
+    await collect(conv, Message("user", "a"))
+    await collect(conv, Message("user", "b"))  # same choice: same process
+    backend.model, backend.thinking = "sonnet", "off"
+    await collect(conv, Message("user", "c"))
+    await conv.close()
+    spawns = [json.loads(line) for line in (tmp_path / "args.json").read_text().splitlines()]
+    assert len(spawns) == 2
+    first, second = spawns
+    assert first[first.index("--model") + 1] == "opus" and first[first.index("--effort") + 1] == "low"
+    assert second[second.index("--model") + 1] == "sonnet" and "--effort" not in second
+    assert (tmp_path / "env.txt").read_text().splitlines() == ["-", "0"]

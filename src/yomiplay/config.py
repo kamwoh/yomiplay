@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import tomllib
 from pathlib import Path
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -25,10 +26,14 @@ class LibraryConfig(BaseModel):
     games_dir: Path | None = None
 
 
+Thinking = Literal["off", "low", "medium", "high", "xhigh", "max"]
+
+
 class LLMConfig(BaseModel):
     backend: str = "claude_cli"
     claude_bin: str = "claude"
     model: str | None = None
+    thinking: Thinking | None = None  # "off" sets MAX_THINKING_TOKENS=0, a level is passed as --effort
     timeout_s: float = 90.0
 
 

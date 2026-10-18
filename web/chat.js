@@ -29,6 +29,9 @@ export async function mountChat(opts) {
   // Live status under the last message: stage text plus elapsed seconds. Removed when the turn is done.
   let statusEl = null, statusText = "", statusTimer = null, statusStart = 0;
   const add = (node) => { if (statusEl) msgs.insertBefore(node, statusEl); else msgs.append(node); };
+  window.addEventListener("yomiplay:llm-change", (e) => {
+    if (e.detail.target === "chat") { add(el("div", "msg-meta", "Model changed. The next question starts a new thread.")); scroll(); }
+  });
   const paintStatus = () => {
     if (statusEl) statusEl.textContent = `${statusText} · ${Math.round((Date.now() - statusStart) / 1000)} s`;
   };

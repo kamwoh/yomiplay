@@ -27,6 +27,8 @@ Or run `uv run yomiplay app "/path/to/game.cue"`. It opens in your default brows
 ## Controls
 Arrows = D-pad, X = Cross, Z = Circle, S = Triangle, A = Square, Enter = Start, Right Shift = Select, Q/W = L1/R1, 1/2 = L2/R2. Gamepads work through the browser. Rebind keys and gamepad buttons in the Controls tab (saved to `controls.json` in the config folder, which overrides `[keys.mapping]`).
 
+The Chat tab has **Model** (Opus, Sonnet, Haiku, Fable) and **Thinking** (Off, Low … Max) pickers. The choice applies from the next question. The app saves it to `llm.json` in the config folder, which overrides `[llm]`. Thinking Off works fully on Sonnet and Haiku. Opus still thinks a little, so use Low for the fastest Opus.
+
 ## Explain
 Ask about the screen to receive study cards with transcriptions, readings, translations, and notes. The translation also shows on the game screen over the original text. Turn it off or change its language with the **Overlay** controls under the screen.
 
